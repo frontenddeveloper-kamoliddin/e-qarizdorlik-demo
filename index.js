@@ -270,10 +270,12 @@
         if (newTotal >= oldAmount) {
           newAmount = oldAmount;
           let qoldiq = newTotal - oldAmount;
-          if (oldEggPrice > 0) {
+          if (oldEggPrice > 0 && oldEggs > 0) {
             newEggs = Math.floor(qoldiq / oldEggPrice);
             if (newEggs > oldEggs) newEggs = oldEggs;
             if (newEggs < 0) newEggs = 0;
+          } else {
+            newEggs = 0;
           }
         } else {
           newAmount = newTotal;
