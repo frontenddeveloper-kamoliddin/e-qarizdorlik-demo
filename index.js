@@ -323,7 +323,7 @@
       let newAmount = type === "add" ? prevAmount + amount : Math.max(0, prevAmount - amount);
       let newEggs = type === "add" ? prevEggs + eggs : Math.max(0, prevEggs - eggs);
 
-      // Tuxum summasini hisoblash (eski tuxumlar eski narxda, yangi tuxumlar yangi narxda)
+      // Faqat yangi tuxumlar yangi narxda, eski tuxumlar eski narxda qoladi
       let addedEggSum = 0;
       let leftEggSum = 0;
       if (type === "add" && eggs !== 0) {
@@ -353,8 +353,10 @@
       debts[name].amount = newAmount;
       debts[name].eggs = newEggs;
       // tuxum narxi faqat tuxum soni kiritilganda yangilanadi
+      // lekin eski tuxumlar narxi o‘zgarmaydi, faqat yangi tuxumlar uchun ishlatiladi
       if (eggPriceInput && eggPriceInput.value && eggs !== 0) {
-        debts[name].eggPrice = changeEggPrice;
+        // Eski narxni o‘zgartirmaymiz!
+        // Faqat yangi tuxumlar uchun narx hisoblandi, umumiy narx o‘zgarmaydi
       }
 
       saveDebts();
