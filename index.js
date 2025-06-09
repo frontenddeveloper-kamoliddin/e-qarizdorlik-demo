@@ -207,7 +207,7 @@
               <button onclick="deleteDebt('${name}')" class="bg-red-500 text-white px-3 py-1 rounded-xl">O‘chirish</button>
             </div>
             <p>Qarzdorlik: <span class="text-blue-600 font-semibold">${data.amount || 0} so'm</span></p>
-            <p class="text-yellow-600">Tuxum: <span class="font-semibold">${data.eggs || 0} ta</span></p>
+           
             <p>Jami tuxum summasi: <span class="text-green-700 font-semibold">${totalEggSum} so'm</span></p>
             ${data.eggType ? `<p>Tuxum turi: ${data.eggType}</p>` : ""}
             <p class="font-bold mt-2">Umumiy qarz: <span class="text-purple-700">${personTotal} so'm</span></p>
@@ -226,7 +226,7 @@
               </div>
             </div>
             <div id="editDiv-${name}" class="mt-2 hidden">
-              ${renderEditDebtForm(name)}
+              ${typeof renderEditDebtForm === "function" ? renderEditDebtForm(name) : ""}
             </div>
             ${historyHtml}
           </div>
@@ -415,11 +415,7 @@
         <input id="editEggs-${name}" type="number" placeholder="Tuxum soni" class="border p-2 rounded w-full mb-2" />
         <input id="editEggPrice-${name}" type="number" placeholder="Tuxum narxi" class="border p-2 rounded w-full mb-2" />
         <input id="editTotalSubtract-${name}" type="number" placeholder="Jami puldan ayirish" class="border p-2 rounded w-full mb-2" />
-        <div class="flex gap-2">
-          <button onclick="changeDebtDiv('${name}', 'add')" class="bg-green-500 text-white px-3 py-1 rounded">Qo‘shish</button>
-          <button onclick="changeDebtDiv('${name}', 'subtract')" class="bg-red-500 text-white px-3 py-1 rounded">Ayirish</button>
-          <button onclick="toggleEditDiv('${name}')" class="bg-gray-500 text-white px-3 py-1 rounded">Yopish</button>
-        </div>
+        
       `;
     }
 
@@ -556,12 +552,102 @@
           (data.phone && data.phone.toLowerCase().includes(query)) ||
           (data.eggType && data.eggType.toLowerCase().includes(query))
         ) {
-          // Quyidagi kodni displayDebts() dagidek yozing yoki qisqartiring:
-          // Faqat mos kelganlarni chiqaradi
-          // ...shu yerda har bir qarzdorni chiqarish uchun displayDebts() dagi HTML kodini ishlating...
-          // Masalan:
-          // listDiv.innerHTML += `<div> ... </div>`;
-          // Yoki displayDebts() funksiyasini moslashtiring
+          // Tarixdan tuxumlar va narxlar bo‘yicha umumiy tuxum summasini hisoblash
+          let totalEggSum = 0;
+          if (data.history && data.history.length) {
+            let eggHistory = [];
+            for (const item of data.history) {
+              if (item.eggs && item.eggPrice) {
+                if (item.type === "add") {
+                  eggHistory.push({ eggs: item.eggs, price: item.eggPrice });
+                } else if (item.type === "subtract") {
+                  let toSubtract = item.eggs;
+                  while (toSubtract > 0 && eggHistory.length > 0) {
+                    let last = eggHistory[eggHistory.length - 1];
+                    if (last.eggs > toSubtract) {
+                      last.eggs -= toSubtract;
+                      toSubtract = 0;
+                    } else {
+                      toSubtract -= last.eggs;
+                      eggHistory.pop();
+                    }
+                  }
+                }
+              }
+            }
+            totalEggSum = eggHistory.reduce((sum, e) => sum + (e.eggs * e.price), 0);
+          } else {
+            totalEggSum = (data.eggs || 0) * (data.eggPrice || 0);
+          }
+          const personTotal = (data.amount || 0) + totalEggSum;
+
+          // Tarix HTML
+          let historyHtml = "";
+          if (data.history && data.history.length) {
+            historyHtml = `
+              <div id="historyDiv-${name}" class="mt-4 p-4 bg-white rounded-xl border-2 border-purple-400 shadow-lg hidden">
+                <div class="flex justify-between items-center mb-2">
+                  <div class="text-lg font-bold text-purple-700">Tarix</div>
+                  <div class="flex gap-2 items-center">
+                    <input id="minusInput-${name}" type="number" placeholder="Jami puldan ayirish" class="border p-1 rounded w-32 text-sm" />
+                    <button onclick="minusTotalDebt('${name}')" class="bg-red-500 text-white px-2 py-1 rounded text-sm">Jami minus</button>
+                  </div>
+                </div>
+                <div class="grid gap-2">
+                  ${data.history.slice().reverse().map(item => `
+                    <div class="p-3 rounded-xl border ${item.type === "add" ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50'}">
+                      <div class="flex justify-between items-center">
+                        <span class="font-semibold">${item.date}</span>
+                        <span class="${item.type === "add" ? 'text-green-600' : 'text-red-600'} font-bold">
+                          ${item.type === "add" ? "+ Qo‘shildi" : "- Ayirildi"}
+                        </span>
+                      </div>
+                      <div class="mt-1">
+                        ${item.amount ? `<div>Pul: <b>${item.amount}</b> so'm</div>` : ""}
+                        ${item.eggs ? `<div>Tuxum: <b>${item.eggs}</b> ta</div>` : ""}
+                        ${item.eggs ? `<div>Tuxum narxi: <b>${item.eggPrice}</b> so'm</div>` : ""}
+                        ${item.eggs ? `<div>Jami tuxum: <b>${item.eggSum}</b> so'm</div>` : ""}
+                      </div>
+                      <div class="text-xs text-gray-600 mt-1">
+                        Qoldi: <b>${item.leftAmount}</b> so'm, <b>${item.leftEggs}</b> ta tuxum, jami: <b>${item.leftEggSum}</b> so'm
+                      </div>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            `;
+          }
+
+          listDiv.innerHTML += `
+            <div class="bg-white border p-4 rounded-xl shadow relative">
+              <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold">${name}</h3>
+                <button onclick="deleteDebt('${name}')" class="bg-red-500 text-white px-3 py-1 rounded-xl">O‘chirish</button>
+              </div>
+              <p>Qarzdorlik: <span class="text-blue-600 font-semibold">${data.amount || 0} so'm</span></p>
+              <p>Jami tuxum summasi: <span class="text-green-700 font-semibold">${totalEggSum} so'm</span></p>
+              ${data.eggType ? `<p>Tuxum turi: ${data.eggType}</p>` : ""}
+              <p class="font-bold mt-2">Umumiy qarz: <span class="text-purple-700">${personTotal} so'm</span></p>
+              ${data.phone ? `<p>📞 ${data.phone}</p>` : ""}
+              <div class="flex flex-col sm:flex-row gap-2 mt-2 flex-wrap items-center">
+                <button onclick="toggleHistoryDiv('${name}')" class="bg-gray-500 hover:bg-gray-600 transition text-white px-3 py-1 rounded shadow w-full sm:w-auto">Tarix</button>
+                <div class="flex flex-col sm:flex-row gap-2 items-center bg-blue-50 border border-blue-200 rounded px-2 py-1 w-full sm:w-auto">
+                  <input id="addAmount-${name}" type="number" placeholder="Qarzdorlik (so'm)" class="border border-blue-300 focus:ring-2 focus:ring-blue-200 p-1 rounded w-full sm:w-28 text-sm outline-none" />
+                  <input id="addEggs-${name}" type="number" placeholder="Tuxum soni qo‘shish" class="border border-blue-300 focus:ring-2 focus:ring-blue-200 p-1 rounded w-full sm:w-24 text-sm outline-none" />
+                  <input id="addEggPrice-${name}" type="number" placeholder="Tuxum narxini qo‘shish" class="border border-blue-300 focus:ring-2 focus:ring-blue-200 p-1 rounded w-full sm:w-24 text-sm outline-none" />
+                  <button onclick="addToDebt('${name}')" class="bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded shadow text-sm w-full sm:w-auto">Qo‘shish</button>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 items-center bg-red-50 border border-red-200 rounded px-2 py-1 w-full sm:w-auto">
+                  <input id="minusInput-${name}" type="number" placeholder="Jami puldan ayirish" class="border border-red-300 focus:ring-2 focus:ring-red-200 p-1 rounded w-full sm:w-32 text-sm outline-none" />
+                  <button onclick="minusTotalDebt('${name}')" class="bg-red-500 hover:bg-red-600 transition text-white px-3 py-1 rounded shadow text-sm w-full sm:w-auto">Ayirish</button>
+                </div>
+              </div>
+              <div id="editDiv-${name}" class="mt-2 hidden">
+                ${typeof renderEditDebtForm === "function" ? renderEditDebtForm(name) : ""}
+              </div>
+              ${historyHtml}
+            </div>
+          `;
         }
       }
     }
