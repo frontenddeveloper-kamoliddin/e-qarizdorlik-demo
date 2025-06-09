@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <title>Qarzdorlar Ro‘yxati</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+  <div id="authSection" class="flex flex-col items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-xl shadow max-w-xs w-full">
+      <h2 class="text-2xl font-bold mb-4" id="authTitle">Kirish</h2>
+      <input id="email" type="email" placeholder="Email" class="border p-2 rounded-xl w-full mb-2">
+      <input id="password" type="password" placeholder="Parol" class="border p-2 rounded-xl w-full mb-4">
+      <button onclick="login()" class="bg-blue-600 text-white px-4 py-2 rounded-xl w-full mb-2">Kirish</button>
+      <button onclick="register()" class="bg-green-600 text-white px-4 py-2 rounded-xl w-full">Ro‘yxatdan o‘tish</button>
+      <p id="authMsg" class="text-red-600 mt-2"></p>
+    </div>
+  </div>
+  <div id="mainSection" style="display:none;">
+    <div class="container mx-auto p-4">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold">Qarzdorlar</h1>
+        <button onclick="logout()" class="bg-gray-600 text-white px-4 py-2 rounded-xl">Chiqish</button>
+      </div>
+      <!-- Qarzdor qo‘shish formasi va ro‘yxat -->
+      <div class="bg-white p-4 rounded-xl shadow mb-4">
+        <div id="msgDiv" class="text-red-600 mb-2"></div>
+        <input id="nameInput" type="text" placeholder="Ism" class="border p-2 rounded-xl mb-2 w-full">
+        <input id="amountInput" type="number" placeholder="Pul qarzi" class="border p-2 rounded-xl mb-2 w-full">
+        <input id="eggInput" type="number" placeholder="Tuxum soni" class="border p-2 rounded-xl mb-2 w-full">
+        <input id="eggPriceInput" type="number" placeholder="Tuxum narxi" class="border p-2 rounded-xl mb-2 w-full">
+        <input id="phoneInput" type="text" placeholder="Telefon" class="border p-2 rounded-xl mb-2 w-full">
+        <input id="eggType" type="text" placeholder="Tuxum turi" class="border p-2 rounded-xl mb-2 w-full">
+        <button onclick="addDebt()" class="bg-blue-600 text-white px-4 py-2 rounded-xl w-full">Qo‘shish</button>
+      </div>
+      <div id="totalDebt" class="text-xl font-bold text-purple-700 mb-4"></div>
+      <div id="debtList" class="grid gap-4"></div>
+    </div>
+  </div>
+ <script src="./index.js"></script>
+</body>
+</html>
