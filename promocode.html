@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promocode</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-80 flex flex-col items-center border-2 border-blue-500">
+        <h3 class="text-xl font-bold mb-4">Promocode</h3>
+        <input id="promoInput" type="text" placeholder="Promocode kiriting" class="border p-2 rounded-xl w-full mb-4 text-center">
+        <button onclick="checkPromo()" class="bg-blue-600 text-white px-4 py-2 rounded-xl w-full">Tasdiqlash</button>
+        <p id="promoMsg" class="text-red-600 mt-2"></p>
+    </div>
+    <script>
+        function checkPromo() {
+            const promo = document.getElementById('promoInput').value.trim().toLowerCase();
+            const msg = document.getElementById('promoMsg');
+            let expireDate = null;
+
+            if (promo === "simple") {
+                // 1 oyga ochiladi
+                expireDate = new Date();
+                expireDate.setMonth(expireDate.getMonth() + 1);
+                localStorage.setItem("promoExpire", expireDate.toISOString());
+                localStorage.setItem("promoType", "simple");
+                msg.textContent = "1 oyga ochildi!";
+                setTimeout(() => window.location.href = "index.html", 500);
+            } else if (promo === "standart" || promo === "standard") {
+                // 6 oyga ochiladi
+                expireDate = new Date();
+                expireDate.setMonth(expireDate.getMonth() + 6);
+                localStorage.setItem("promoExpire", expireDate.toISOString());
+                localStorage.setItem("promoType", "standart");
+                msg.textContent = "6 oyga ochildi!";
+                setTimeout(() => window.location.href = "index.html", 500);
+            } else if (promo === "premium") {
+                // 1 yilga ochiladi
+                expireDate = new Date();
+                expireDate.setFullYear(expireDate.getFullYear() + 1);
+                localStorage.setItem("promoExpire", expireDate.toISOString());
+                localStorage.setItem("promoType", "premium");
+                msg.textContent = "1 yilga ochildi!";
+                setTimeout(() => window.location.href = "index.html", 500);
+            } else if (promo === "adminkamoliddin") {
+                window.location.href = "admin.html";
+            } else {
+                msg.textContent = "Promocode noto‘g‘ri!";
+            }
+        }
+
+        // Har safar sahifa ochilganda tekshiradi
+        window.onload = function() {
+            const expire = localStorage.getItem("promoExpire");
+            if (expire) {
+                const now = new Date();
+                const expireDate = new Date(expire);
+                if (expireDate > now) {
+                    // Promocode muddati tugamagan bo‘lsa, to‘g‘ridan-to‘g‘ri index.html ga o‘tkazadi
+                    window.location.href = "index.html";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -38,7 +38,10 @@
         return;
       }
       auth.signInWithEmailAndPassword(email, password)
-        .then(() => showMain())
+        .then(() => {
+          // Agar login va parol to‘g‘ri bo‘lsa:
+          window.location.href = "promocode.html";
+        })
         .catch(e => showMsg(e.message));
     }
 
@@ -657,3 +660,58 @@
     document.getElementById('searchInput').addEventListener('input', function(e) {
       searchDebts(e.target.value);
     });
+
+    function adminLogin() {
+      const login = document.getElementById('adminLogin').value.trim();
+      const password = document.getElementById('adminPassword').value.trim();
+      const msg = document.getElementById('adminLoginMsg');
+      if (login === "admin" && password === "tesla2891") {
+        window.location.href = "admin.html";
+      } else {
+        msg.textContent = "Login yoki parol noto‘g‘ri!";
+        msg.className = "text-red-600 mt-2";
+      }
+    }
+    function adminLogin() {
+  const login = document.getElementById('adminLogin').value.trim();
+  const password = document.getElementById('adminPassword').value.trim();
+  const msg = document.getElementById('adminLoginMsg');
+  if (login === "admin" && password === "tesla2891") {
+    window.location.href = "admin.html";
+  } else {
+    msg.textContent = "Login yoki parol noto‘g‘ri!";
+    msg.className = "text-red-600 mt-2";
+  }
+}
+
+    // Promocode tekshirish funksiyasi
+    function checkPromo() {
+      const promo = document.getElementById('promoInput').value.trim().toLowerCase();
+      const msg = document.getElementById('promoMsg');
+      if (promo === "simple") {
+        msg.textContent = "1 oyga ochildi!";
+        setTimeout(() => {
+          document.getElementById('promoModal').classList.add('hidden');
+          document.getElementById('mainSection').style.display = "";
+          document.getElementById('authSection').style.display = "none";
+        }, 1000);
+      } else if (promo === "standart" || promo === "standart" || promo === "standard") {
+        msg.textContent = "6 oyga ochildi!";
+        setTimeout(() => {
+          document.getElementById('promoModal').classList.add('hidden');
+          document.getElementById('mainSection').style.display = "";
+          document.getElementById('authSection').style.display = "none";
+        }, 1000);
+      } else if (promo === "premium") {
+        msg.textContent = "1 yilga ochildi!";
+        setTimeout(() => {
+          document.getElementById('promoModal').classList.add('hidden');
+          document.getElementById('mainSection').style.display = "";
+          document.getElementById('authSection').style.display = "none";
+        }, 1000);
+      } else if (promo === "adminkamoliddin") {
+        window.location.href = "admin.html";
+      } else {
+        msg.textContent = "Promocode noto‘g‘ri!";
+      }
+    }
