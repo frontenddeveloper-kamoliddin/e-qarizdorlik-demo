@@ -545,3 +545,29 @@
 
       displayDebts();
     }
+
+    function searchDebts(query) {
+      query = query.trim().toLowerCase();
+      const listDiv = document.getElementById('debtList');
+      listDiv.innerHTML = "";
+      for (const [name, data] of Object.entries(debts)) {
+        if (
+          name.toLowerCase().includes(query) ||
+          (data.phone && data.phone.toLowerCase().includes(query)) ||
+          (data.eggType && data.eggType.toLowerCase().includes(query))
+        ) {
+          // Quyidagi kodni displayDebts() dagidek yozing yoki qisqartiring:
+          // Faqat mos kelganlarni chiqaradi
+          // ...shu yerda har bir qarzdorni chiqarish uchun displayDebts() dagi HTML kodini ishlating...
+          // Masalan:
+          // listDiv.innerHTML += `<div> ... </div>`;
+          // Yoki displayDebts() funksiyasini moslashtiring
+        }
+      }
+    }
+
+    // HTMLga input qo‘shing (masalan, <input id="searchInput" ... />)
+    // va event qo‘shing:
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      searchDebts(e.target.value);
+    });
