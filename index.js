@@ -216,8 +216,8 @@
               <button onclick="toggleHistoryDiv('${name}')" class="bg-gray-500 hover:bg-gray-600 transition text-white px-3 py-1 rounded shadow w-full sm:w-auto">Tarix</button>
               <div class="flex flex-col sm:flex-row gap-2 items-center bg-blue-50 border border-blue-200 rounded px-2 py-1 w-full sm:w-auto">
                 <input id="addAmount-${name}" type="number" placeholder="Qarzdorlik (so'm)" class="border border-blue-300 focus:ring-2 focus:ring-blue-200 p-1 rounded w-full sm:w-28 text-sm outline-none" />
-                <input id="addEggs-${name}" type="number" placeholder="Tuxum soni" class="border border-blue-300 focus:ring-2 focus:ring-blue-200 p-1 rounded w-full sm:w-24 text-sm outline-none" />
-                <input id="addEggPrice-${name}" type="number" placeholder="Tuxum narxi" class="border border-blue-300 focus:ring-2 focus:ring-blue-200 p-1 rounded w-full sm:w-24 text-sm outline-none" />
+                <input id="addEggs-${name}" type="number" placeholder="Tuxum soni qo‘shish" class="border border-blue-300 focus:ring-2 focus:ring-blue-200 p-1 rounded w-full sm:w-24 text-sm outline-none" />
+                <input id="addEggPrice-${name}" type="number" placeholder="Tuxum narxini qo‘shish" class="border border-blue-300 focus:ring-2 focus:ring-blue-200 p-1 rounded w-full sm:w-24 text-sm outline-none" />
                 <button onclick="addToDebt('${name}')" class="bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded shadow text-sm w-full sm:w-auto">Qo‘shish</button>
               </div>
               <div class="flex flex-col sm:flex-row gap-2 items-center bg-red-50 border border-red-200 rounded px-2 py-1 w-full sm:w-auto">
@@ -484,9 +484,13 @@
     }
 
     function addToDebt(name) {
-      const amount = parseFloat(document.getElementById(`addAmount-${name}`).value) || 0;
-      const eggs = parseInt(document.getElementById(`addEggs-${name}`).value) || 0;
-      const eggPrice = parseFloat(document.getElementById(`addEggPrice-${name}`).value) || 0;
+      const amountInput = document.getElementById(`addAmount-${name}`);
+      const eggsInput = document.getElementById(`addEggs-${name}`);
+      const eggPriceInput = document.getElementById(`addEggPrice-${name}`);
+
+      const amount = parseFloat(amountInput.value) || 0;
+      const eggs = parseInt(eggsInput.value) || 0;
+      const eggPrice = parseFloat(eggPriceInput.value) || 0;
 
       if (amount === 0 && eggs === 0) {
         showMsgDiv("Qiymat kiriting!", "red");
@@ -498,13 +502,21 @@
       let prevEggs = debts[name].eggs || 0;
       let prevEggPrice = debts[name].eggPrice || 0;
 
-      // Yangi qiymatlar
-      let newAmount = prevAmount + amount;
+      // Jami tuxum summasi (barcha tuxumlar uchun)
+      // Avvalgi tuxumlar summasi
+      let prevEggSum = (prevEggs * prevEggPrice);
+
+      // Yangi tuxum summasi (faqat yangi qo‘shilgan tuxumlar uchun)
+      let addedEggSum = eggs * eggPrice;
+
+      // Yangi tuxumlar summasini avvalgi jami tuxum summasiga qo‘shamiz
+      let leftEggSum = prevEggSum + addedEggSum;
+
+      // Yangi tuxumlar sonini avvalgi tuxumlar soniga qo‘shamiz
       let newEggs = prevEggs + eggs;
 
-      // Tuxum summasi
-      let addedEggSum = eggs * eggPrice;
-      let leftEggSum = (prevEggs * prevEggPrice) + addedEggSum;
+      // Yangi pul qarzi faqat pul inputi bo‘yicha qo‘shiladi
+      let newAmount = prevAmount + amount;
 
       // Tarixga yozish
       if (!debts[name].history) debts[name].history = [];
@@ -525,5 +537,11 @@
       if (eggs !== 0) debts[name].eggPrice = eggPrice; // faqat tuxum qo‘shilganda narx yangilanadi
 
       saveDebts();
+
+      // Inputlarni tozalash
+      amountInput.value = "";
+      eggsInput.value = "";
+      eggPriceInput.value = "";
+
       displayDebts();
     }
