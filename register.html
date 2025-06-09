@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ro‘yxatdan o‘tish</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-blue-700">Ro‘yxatdan o‘tish</h2>
+    <form id="registerForm" onsubmit="register(); return false;">
+      <div class="mb-4">
+        <label for="email" class="block text-gray-700 mb-1">Email</label>
+        <input id="email" type="email" class="border rounded w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="email@misol.com" required>
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-gray-700 mb-1">Parol</label>
+        <input id="password" type="password" class="border rounded w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Parol" required minlength="6">
+      </div>
+      <div id="authMsg" class="text-red-600 mb-4 text-center"></div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Ro‘yxatdan o‘tish</button>
+    </form>
+    <p class="mt-4 text-center text-gray-600">
+      Akkountingiz bormi?
+      <a href="./index.html" class="text-blue-600 hover:underline">Kirish</a>
+    </p>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script>
+    // Firebase configni index.js dagidek joylashtiring
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgb0G3chiVfdzRXLaIqPV5R2Hx5Un3S0g",
+      authDomain: "e-qarizdorlik.firebaseapp.com",
+      projectId: "e-qarizdorlik",
+      storageBucket: "e-qarizdorlik.appspot.com",
+      messagingSenderId: "975301245533",
+      appId: "1:975301245533:web:436f9a6c3afc50fe756bb4"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function showMsg(msg) {
+      document.getElementById('authMsg').innerText = msg;
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function register() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      if (!isValidEmail(email)) {
+        showMsg("Email manzili noto‘g‘ri kiritilgan!");
+        return;
+      }
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          showMsg("Muvaffaqiyatli ro‘yxatdan o‘tildi! Kirish sahifasiga yo‘naltirilmoqda...");
+          setTimeout(() => window.location.href = "index.html", 1500); // <-- login.html o‘rniga index.html
+        })
+        .catch(e => showMsg(e.message));
+    }
+  </script>
+</body>
+</html>

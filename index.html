@@ -15,7 +15,7 @@
       <input id="email" type="email" placeholder="Email" class="border p-2 rounded-xl w-full mb-2">
       <input id="password" type="password" placeholder="Parol" class="border p-2 rounded-xl w-full mb-4">
       <button onclick="login()" class="bg-blue-600 text-white px-4 py-2 rounded-xl w-full mb-2">Kirish</button>
-      <button onclick="register()" class="bg-green-600 text-white px-4 py-2 rounded-xl w-full">Ro‘yxatdan o‘tish</button>
+      <button onclick="window.location.href='register.html'" class="bg-green-600 text-white px-4 py-2 rounded-xl w-full">Ro‘yxatdan o‘tish</button>
       <p id="authMsg" class="text-red-600 mt-2"></p>
     </div>
   </div>
@@ -38,6 +38,18 @@
       </div>
       <div id="totalDebt" class="text-xl font-bold text-purple-700 mb-4"></div>
       <div id="debtList" class="grid gap-4"></div>
+    </div>
+  </div>
+  <!-- Card ichida -->
+  <div id="editDiv-${name}" class="mt-2 hidden">
+    <input id="editAmount-${name}" type="number" placeholder="Pul miqdori" class="border p-1 rounded mb-1 w-full" />
+    <input id="editEggs-${name}" type="number" placeholder="Tuxum soni" class="border p-1 rounded mb-1 w-full" />
+    <input id="editEggPrice-${name}" type="number" placeholder="Tuxum narxi" class="border p-1 rounded mb-1 w-full" />
+    <input id="editTotalSubtract-${name}" type="number" placeholder="Jami puldan ayirish" class="border p-1 rounded mb-1 w-full" />
+    <div class="flex gap-2">
+      <button onclick="changeDebtDiv('${name}', 'add')" class="bg-green-500 text-white px-2 py-1 rounded w-full">Qo‘shish</button>
+      <button onclick="changeDebtDiv('${name}', 'subtract')" class="bg-yellow-500 text-white px-2 py-1 rounded w-full">Ayirish</button>
+      <button onclick="toggleEditDiv('${name}')" class="bg-gray-400 text-white px-2 py-1 rounded w-full">Yopish</button>
     </div>
   </div>
  <script src="./index.js"></script>
